@@ -5,7 +5,7 @@ import {RLPReader} from "../lib/RLPReader.sol";
 import {MerklePatriciaProof} from "../lib/MerklePatriciaProof.sol";
 import {Merkle} from "../lib/Merkle.sol";
 import "../lib/ExitPayloadReader.sol";
-import {IFxStateSender} from "../FxRoot.sol";
+import {IFxStateSender} from "./FxRoot.sol";
 
 contract ICheckpointManager {
     struct HeaderBlock {
@@ -33,7 +33,8 @@ abstract contract FxBaseRootTunnel {
     using ExitPayloadReader for ExitPayloadReader.Receipt;
 
     // keccak256(MessageSent(bytes))
-    bytes32 public constant SEND_MESSAGE_EVENT_SIG = 0x8c5261668696ce22758910d05bab8f186d6eb247ceac2af2e82c7dc17669b036;
+    bytes32 public constant SEND_MESSAGE_EVENT_SIG =
+        0x8c5261668696ce22758910d05bab8f186d6eb247ceac2af2e82c7dc17669b036;
 
     // state sender contract
     IFxStateSender public fxRoot;
@@ -52,7 +53,10 @@ abstract contract FxBaseRootTunnel {
 
     // set fxChildTunnel if not set already
     function setFxChildTunnel(address _fxChildTunnel) public virtual {
-        require(fxChildTunnel == address(0x0), "FxBaseRootTunnel: CHILD_TUNNEL_ALREADY_SET");
+        require(
+            fxChildTunnel == address(0x0),
+            "FxBaseRootTunnel: CHILD_TUNNEL_ALREADY_SET"
+        );
         fxChildTunnel = _fxChildTunnel;
     }
 
@@ -69,8 +73,11 @@ abstract contract FxBaseRootTunnel {
         fxRoot.sendMessageToChild(fxChildTunnel, message);
     }
 
-    function _validateAndExtractMessage(bytes memory inputData) internal returns (bytes memory) {
-        ExitPayloadReader.ExitPayload memory payload = inputData.toExitPayload();
+    function _validateAndExtractMessage(
+        bytes memory inputData
+    ) internal returns (bytes memory) {
+        ExitPayloadReader.ExitPayload memory payload = inputData
+            .toExitPayload();
 
         bytes memory branchMaskBytes = payload.getBranchMaskAsBytes();
         uint256 blockNumber = payload.getBlockNumber();
@@ -86,19 +93,30 @@ abstract contract FxBaseRootTunnel {
                 payload.getReceiptLogIndex()
             )
         );
-        require(processedExits[exitHash] == false, "FxRootTunnel: EXIT_ALREADY_PROCESSED");
+        require(
+            processedExits[exitHash] == false,
+            "FxRootTunnel: EXIT_ALREADY_PROCESSED"
+        );
         processedExits[exitHash] = true;
 
         ExitPayloadReader.Receipt memory receipt = payload.getReceipt();
         ExitPayloadReader.Log memory log = receipt.getLog();
 
         // check child tunnel
-        require(fxChildTunnel == log.getEmitter(), "FxRootTunnel: INVALID_FX_CHILD_TUNNEL");
+        require(
+            fxChildTunnel == log.getEmitter(),
+            "FxRootTunnel: INVALID_FX_CHILD_TUNNEL"
+        );
 
         bytes32 receiptRoot = payload.getReceiptRoot();
         // verify receipt inclusion
         require(
-            MerklePatriciaProof.verify(receipt.toBytes(), branchMaskBytes, payload.getReceiptProof(), receiptRoot),
+            MerklePatriciaProof.verify(
+                receipt.toBytes(),
+                branchMaskBytes,
+                payload.getReceiptProof(),
+                receiptRoot
+            ),
             "FxRootTunnel: INVALID_RECEIPT_PROOF"
         );
 
@@ -132,14 +150,18 @@ abstract contract FxBaseRootTunnel {
         uint256 headerNumber,
         bytes memory blockProof
     ) private view {
-        (bytes32 headerRoot, uint256 startBlock, , uint256 createdAt, ) = checkpointManager.headerBlocks(headerNumber);
+        (
+            bytes32 headerRoot,
+            uint256 startBlock,
+            ,
+            uint256 createdAt,
+
+        ) = checkpointManager.headerBlocks(headerNumber);
 
         require(
-            keccak256(abi.encodePacked(blockNumber, blockTime, txRoot, receiptRoot)).checkMembership(
-                blockNumber - startBlock,
-                headerRoot,
-                blockProof
-            ),
+            keccak256(
+                abi.encodePacked(blockNumber, blockTime, txRoot, receiptRoot)
+            ).checkMembership(blockNumber - startBlock, headerRoot, blockProof),
             "FxRootTunnel: INVALID_HEADER"
         );
     }

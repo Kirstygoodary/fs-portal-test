@@ -1,14 +1,10 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
-import "hardhat-deploy";
-import "hardhat-gas-reporter";
-import 'hardhat-contract-sizer';
-import "@nomiclabs/hardhat-ethers";
-import "@nomicfoundation/hardhat-chai-matchers";
+// import "hardhat-deploy";
+// import "hardhat-gas-reporter";
+// import 'hardhat-contract-sizer';
+// import "@nomicfoundation/hardhat-chai-matchers";
 import "@openzeppelin/hardhat-upgrades";
-import "@nomiclabs/hardhat-etherscan";
-import "hardhat-tracer";
-import 'hardhat-docgen';
 
 
 require('dotenv').config();
@@ -33,13 +29,21 @@ const hardhatConfig: HardhatUserConfig = {
       //   gas: 2100000,
       // },
       mumbai: {
-        url: 'https://polygon-mumbai.g.alchemy.com/v2/cWETzsfTcZ2QDDWEWGtsi6l1GnTQgDhW',
+        url: 'https://polygon-mumbai.g.alchemy.com/v2/mEoHNDidgHHPSp5vChGUIQ8UxQkW2LOO',
+        accounts: [`0x${process.env.DEPLOYER_2}`,`0x${process.env.DEPLOYER}`, `0x${process.env.ADMIN}`],
         gas: 2100000,
         gasPrice: 8000000000,
         chainId: 80001,
         blockGasLimit: 999999999999,
         allowUnlimitedContractSize: false,
-      }
+      },
+      goerli: {
+        url: 'https://eth-goerli.g.alchemy.com/v2/Q7O028FyF9m6xw3n09Ucaw8Rlm9StUqn',
+        accounts: [`0x${process.env.DEPLOYER_2}`,`0x${process.env.DEPLOYER}`, `0x${process.env.ADMIN}`],
+        gas: 2100000000,
+        blockGasLimit: 999999999999,
+        gasPrice: 8000000000,
+      },
     },
     solidity: {
       version: "0.8.9",
@@ -62,9 +66,9 @@ const hardhatConfig: HardhatUserConfig = {
       // outputFile: 'gas-report.txt',
       coinmarketcap: '39644bf2-2c65-480e-922f-60bcf713c1d1'
     },
-    etherscan: {
-      apiKey: {polygonMumbai:'E3FWWYM7WDMNG5NTQ3I7UUZWGS3MDIF8QJ'},
-    },
+    // etherscan: {
+    //   apiKey: {polygonMumbai:'E3FWWYM7WDMNG5NTQ3I7UUZWGS3MDIF8QJ'},
+    // },
     // docgen: {
     //   path: './docs',
     //   clear: true,

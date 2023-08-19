@@ -48,8 +48,7 @@ contract TOKEN is
     function initialize(
         address _accessAddress,
         address _systemPauseAddress,
-        uint256 _maximumSupply,
-        address _lzEndpoint
+        uint256 _maximumSupply
     ) public initializer {
         __ERC20_init("RacingToken", "TOKEN");
         __Pausable_init();
