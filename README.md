@@ -15,4 +15,7 @@
    `npx hardhat run scripts/scripts/scripts/03-deploy-root-tunnel.ts --network goerli`
 
 5. Deploy FxERC20ChildTunner contract on the Mumbai network
+   Set the FXERC20RootTunnel address
    `npx hardhat run scripts/04-deploy-child-tunnel.ts --network mumbai`
+
+6.
