@@ -1,12 +1,8 @@
-import { ethers, upgrades } from "hardhat";
-import { FxERC20 } from '../typechain-types/contracts/core/token/FxERC20';
-import { fxErc20 } from '../fx-values';
 const hre = require("hardhat");
-
 
 async function main() {
 
-	const deployer = await ethers.getSigner('0xB389a9aA1B44f527fE0401C73C7C8917ce9ADA07')
+	// const deployer = await ethers.getSigner('0xB389a9aA1B44f527fE0401C73C7C8917ce9ADA07')
 
 	const FxERC20 = await hre.ethers.getContractFactory("FxERC20");
   const fxErc20 = await FxERC20.deploy();

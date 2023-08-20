@@ -23,7 +23,7 @@ async function main() {
 
 	const TOKEN = await ethers.getContractFactory("TOKEN", deployer);
 	// access and pauser addresses taken from the latest build
-	const token = await upgrades.deployProxy(TOKEN, ['0x924747217d46a012Af1eC4843b79d1992Ef943C7', '0xfDff5E14B25beCBD1bb5530114e98e1A563B299F', ethers.parseEther("10")]);
+	const token = await upgrades.deployProxy(TOKEN, ['0x924747217d46a012Af1eC4843b79d1992Ef943C7', '0xfDff5E14B25beCBD1bb5530114e98e1A563B299F', ethers.parseEther("1000")]);
 
 	await token.waitForDeployment();
 	console.log("Token contract deployed at:", await token.getAddress());

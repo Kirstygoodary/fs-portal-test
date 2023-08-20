@@ -58,14 +58,71 @@ async function main() {
     // Create Safe instance
     ExecSdkOwner1 = await Safe.create({
       ethAdapter: exec,
-      safeAddress: "0x71120E01AF18a7B51Be30da193ee0586b4f7F068",
+      safeAddress: "0x95e37cfA9C151055a603708bC98cedD666FC6809",
     });
     ExecSdkOwner2 = await Safe.create({
       ethAdapter: admin,
-      safeAddress: "0x71120E01AF18a7B51Be30da193ee0586b4f7F068",
+      safeAddress: "0x95e37cfA9C151055a603708bC98cedD666FC6809",
     });
     
     console.log("Set up complete");
+
+    const safeTransactionData: SafeTransactionDataPartial = {
+      to: vext.address,
+      data: vext.interface.encodeFunctionData("mint", ['0xB389a9aA1B44f527fE0401C73C7C8917ce9ADA07', ethers.utils.parseEther('2')]),
+      value: "0",
+  }
+    const safeTransaction = await ExecSdkOwner1.createTransaction({ safeTransactionData })
+
+    console.log("Proposing tx....")
+    const safeTxHash = await ExecSdkOwner1.getTransactionHash(safeTransaction)
+    const senderSignature = await ExecSdkOwner1.signTransactionHash(safeTxHash)
+
+    await safeservice.proposeTransaction({
+      safeAddress: "0x95e37cfA9C151055a603708bC98cedD666FC6809",
+      safeTransactionData: safeTransaction.data,
+      safeTxHash,
+      senderAddress: execSigner.address,
+      senderSignature: senderSignature.data
+    })
+
+    console.log(
+      "Confirm transaction successful for transaction hash ",
+      safeTxHash
+    );
+  
+    console.log("Getting pending transactions");
+  
+  
+      console.log('Getting pending tx....')
+  
+      tx = await safeservice.getTransaction(safeTxHash)
+  
+      const signerToo = await ExecSdkOwner2.signTransactionHash(tx.safeTxHash);
+  
+      await safeservice.confirmTransaction(safeTxHash, signerToo.data);
+  
+    console.log(
+      "Confirm transaction successful for transaction hash ",
+      safeTxHash
+    );
+
+    console.log("Getting pending transactions");
+    const tx2 = await safeservice.getTransaction(safeTxHash)
+
+    console.log('Executing tx....')
+    const isValidTx = await ExecSdkOwner1.isValidTransaction(tx2)
+    console.log("Tx is valid: ", isValidTx)
+    if(isValidTx){
+      const executeTxResponse = await ExecSdkOwner1.executeTransaction(tx2)
+      receipt = executeTxResponse.transactionResponse && (await executeTxResponse.transactionResponse.wait())
+
+    console.log("Transaction executed:");
+    console.log(`https://goerli.etherscan.io/tx/${receipt.transactionHash}`);
+  } else {
+    console.log('Tx is invalid!')
+  }
+
 
 	// const FxERC20ChildTunnel = await hre.ethers.getContractFactory("FxERC20ChildTunnel");
   // const fxERC20ChildTunnel = await FxERC20ChildTunnel.deploy('0xCf73231F28B7331BBe3124B907840A94851f9f11', '0x3b8Ff2D4C1f1407D698b7cbF2073916BA071A539');

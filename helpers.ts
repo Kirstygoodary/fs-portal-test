@@ -9,6 +9,7 @@ import {
   SafeMultisigTransactionResponse,
 } from "@safe-global/safe-core-sdk-types";
 import Safe, { EthersAdapter } from "@safe-global/protocol-kit";
+import { fxErc20 } from './fx-values';
 
 /**
  * @notice This function creates an Ethers adapter.
@@ -241,4 +242,5 @@ export const accessAbi = require("./artifacts/contracts/core/security/Access.sol
 export const pauserAbi = require("./artifacts/contracts/core/security/SystemPause.sol/SystemPause.json");
 export const rewardPoolAbi = require("./artifacts/contracts/rewards/staking/RewardPool.sol/RewardPool.json");
 export const weightCalculatorAbi = require("./artifacts/contracts/governance/WeightCalculator.sol/WeightCalculator.json");
-export const counterAbi = require("./artifacts/contracts/test-contracts/TestGnosisSafe.sol/TestGnosisSafe.json");
+export const fxErc20RootAbi = require("./artifacts/contracts/core/token/FxERC20RootTunnel.sol/FxERC20RootTunnel.json");
+export const fxERC20ChildTunnelAbi = require("./artifacts/contracts/core/token/FxERC20ChildTunnel.sol/FxERC20ChildTunnel.json");

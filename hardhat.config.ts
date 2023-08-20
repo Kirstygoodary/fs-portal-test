@@ -42,7 +42,7 @@ const hardhatConfig: HardhatUserConfig = {
         accounts: [`0x${process.env.DEPLOYER_2}`,`0x${process.env.DEPLOYER}`, `0x${process.env.ADMIN}`],
         gas: 2100000000,
         blockGasLimit: 999999999999,
-        gasPrice: 8000000000,
+        gasPrice: 8000000000000,
       },
     },
     solidity: {

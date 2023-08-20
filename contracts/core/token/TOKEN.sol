@@ -50,9 +50,9 @@ contract TOKEN is
         address _systemPauseAddress,
         uint256 _maximumSupply
     ) public initializer {
-        __ERC20_init("RacingToken", "TOKEN");
+        __ERC20_init("RacingToken2", "TOKEN2");
         __Pausable_init();
-        __ERC20Permit_init("RacingToken");
+        __ERC20Permit_init("RacingToken2");
         __ERC20Votes_init();
         require(
             _accessAddress != address(0) && _systemPauseAddress != address(0),
