@@ -287,12 +287,35 @@ async function main() {
 
   console.log(childToken);
 
-  // // here we are passing in the child token address and amount to withdraw
-  const tx = await fxERC20ChildTunnel.connect(deployer).withdraw(childToken, ethers.utils.parseEther('2'));
 
-  const receipt = await tx.wait(); 
+  const abi2 = [
+    {
+      "inputs": [],
+      "name": "connectedToken",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
 
-  console.log(receipt);
+
+  const childTokenContract = new Contract(childToken, abi2, provider);
+
+  console.log("CONNECTED TOKEN:", await childTokenContract.connectedToken())
+
+
+  // // // here we are passing in the child token address and amount to withdraw
+  // const tx = await fxERC20ChildTunnel.connect(deployer).withdraw(childToken, ethers.utils.parseEther('2'));
+
+  // const receipt = await tx.wait(); 
+
+  // console.log(receipt);
 
   // balance should be 2 VEXT on Goerli
   }

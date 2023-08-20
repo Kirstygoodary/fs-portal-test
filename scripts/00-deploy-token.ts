@@ -4,6 +4,8 @@ async function main() {
 
 	const deployer = await ethers.getSigner('0xB389a9aA1B44f527fE0401C73C7C8917ce9ADA07')
 
+	
+
 	// const provider = new ethers.providers.JsonRpcProvider('https://eth-goerli.g.alchemy.com/v2/Q7O028FyF9m6xw3n09Ucaw8Rlm9StUqn')
 
 
