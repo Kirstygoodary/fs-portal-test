@@ -4,12 +4,18 @@ pragma solidity ^0.8.0;
 // import {ERC20} from "../../lib/ERC20.sol";
 import {IFxERC20} from "./IFxERC20.sol";
 
-import "./ERC20Votes.sol";
+import "./ERC20VotesUpgradeable.sol";
+
+import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol";
 
 /**
  * @title FxERC20 represents fx erc20 on Polygon
  */
-contract FxERC20Child is IFxERC20, ERC20Votes {
+contract FxERC20Child is
+    ERC20PermitUpgradeable,
+    ERC20VotesUpgradeable,
+    IFxERC20
+{
     address internal _fxManager;
     address internal _connectedToken;
     /// total accounts
@@ -28,7 +34,8 @@ contract FxERC20Child is IFxERC20, ERC20Votes {
         string memory symbol_,
         uint8 decimals_
     ) public override {
-        ERC20Votes();
+        __ERC20Votes_init();
+        __ERC20Permit_init("RacingToken2");
         require(
             _fxManager == address(0x0) && _connectedToken == address(0x0),
             "Token is already initialized"
@@ -45,7 +52,7 @@ contract FxERC20Child is IFxERC20, ERC20Votes {
     @return uint256 total accounts that own TOKEN
      */
 
-    function getTotalAccounts() external view override returns (uint256) {
+    function getTotalAccounts() external view returns (uint256) {
         return totalAccounts;
     }
 
@@ -95,6 +102,88 @@ contract FxERC20Child is IFxERC20, ERC20Votes {
     }
 
     /**
+    @dev this function returns the allowance for spender.
+    @param _owner. The owner of approved tokens. 
+    @param spender. The amount spender is approved for. 
+    @return uint256. The amount spender is approved for
+     */
+
+    function allowance(
+        address _owner,
+        address spender
+    ) public view virtual override returns (uint256) {
+        return super.allowance(_owner, spender);
+    }
+
+    /**
+    @dev this function is for transferring tokens. 
+    Callable when system is not paused and contract is not paused.
+    @return bool if the transfer was successful
+     */
+
+    function transfer(
+        address to,
+        uint256 amount
+    ) public virtual override returns (bool) {
+        if (amount != 0) _increaseTotalAccounts(to);
+        super.transfer(to, amount);
+        if (amount != 0) _decreaseTotalAccounts(msg.sender);
+        return true;
+    }
+
+    /**
+    @dev this function is for third party transfer of tokens. 
+    Callable when system is not paused and contract is not paused.
+    @return true if the transfer was successful
+     */
+    function transferFrom(
+        address from,
+        address to,
+        uint256 amount
+    ) public virtual override returns (bool) {
+        if (amount != 0) _increaseTotalAccounts(to);
+        super.transferFrom(from, to, amount);
+        if (amount != 0) {
+            _decreaseTotalAccounts(from);
+        }
+        return true;
+    }
+
+    /**
+    @dev approve function to approve spender with amount. 
+    Can be called when system and this contract is unpaused.
+    @param spender. The approved address. 
+    @param amount. The amount spender is approved for. 
+    @return true if the approval was successful
+     */
+    function approve(
+        address spender,
+        uint256 amount
+    ) public virtual override returns (bool) {
+        return super.approve(spender, amount);
+    }
+
+    /**
+    @dev this function returns the balance of account
+    @param account. The account to return balance for
+    @return balance 
+     */
+
+    function balanceOf(
+        address account
+    ) public view virtual override returns (uint256) {
+        return super.balanceOf(account);
+    }
+
+    /**
+    @dev this function returns the total supply
+     */
+
+    function totalSupply() public view virtual override returns (uint256) {
+        return super.totalSupply();
+    }
+
+    /**
     @dev this function returns the user's votes
     @param account. The account to return votes for
     @return the user's total votes
@@ -109,7 +198,7 @@ contract FxERC20Child is IFxERC20, ERC20Votes {
     function getProposalVotes(
         address account,
         uint256 blockNumber
-    ) external view virtual override returns (uint256) {
+    ) external view virtual returns (uint256) {
         return _getProposalVotes(account, blockNumber);
     }
 
@@ -140,7 +229,7 @@ contract FxERC20Child is IFxERC20, ERC20Votes {
     function getCheckpointBlockNumber(
         address account,
         uint32 pos
-    ) external view virtual override returns (uint32) {
+    ) external view virtual returns (uint32) {
         Checkpoint memory checkpoint = checkpoints(account, pos);
 
         return checkpoint.fromBlock;
@@ -154,6 +243,28 @@ contract FxERC20Child is IFxERC20, ERC20Votes {
     function burn(address user, uint256 amount) public override {
         require(msg.sender == _fxManager, "Invalid sender");
         _burn(user, amount);
+    }
+
+    function _afterTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal override(ERC20VotesUpgradeable, ERC20Upgradeable) {
+        super._afterTokenTransfer(from, to, amount);
+    }
+
+    function _mint(
+        address to,
+        uint256 amount
+    ) internal override(ERC20VotesUpgradeable, ERC20Upgradeable) {
+        super._mint(to, amount);
+    }
+
+    function _burn(
+        address account,
+        uint256 amount
+    ) internal override(ERC20VotesUpgradeable, ERC20Upgradeable) {
+        super._burn(account, amount);
     }
 
     function _setupMetaData(

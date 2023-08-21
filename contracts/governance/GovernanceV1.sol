@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 import "../core/security/AbstractSystemPause.sol";
-import "../interfaces/ITOKEN.sol";
+import "../core/token/IFxERC20.sol";
 import "../interfaces/IAccess.sol";
 
 import "../rewards/staking/StakingManager.sol";
@@ -31,7 +31,7 @@ contract GovernanceV1 is
     /// Main access contract
     IAccess access;
     /// interface
-    ITOKEN token;
+    IFxERC20 token;
     /// Staking Manager
     StakingManager staking;
     Proposers public proposers;
@@ -108,7 +108,7 @@ contract GovernanceV1 is
 
         access = IAccess(_accessAddress);
         system = ISystemPause(_systemPauseAddress);
-        token = ITOKEN(_tokenAddress);
+        token = IFxERC20(_tokenAddress);
         staking = StakingManager(_stakingManagerAddress);
         flatMinimum = _flatMinimum;
         highTokenThreshold = _highTokenThreshold;
@@ -631,8 +631,6 @@ contract GovernanceV1 is
         return (_getWeight(_proposalId, _voterAddress));
     }
 
-    
-
     /* ========== INTERNAL ========== */
 
     /**
@@ -803,8 +801,6 @@ contract GovernanceV1 is
             );
         }
     }
-
-
 
     /**
     @dev internal function to check whether the caller is admin
