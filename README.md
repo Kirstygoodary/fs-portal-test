@@ -29,3 +29,6 @@
 
 9. Withdraw back to Goerli from Mumbai
    `npx hardhat run scripts/09-withdraw.ts  --network mumbai`
+
+10. Generate proof to mint back to Goerli
+    `ts-node scripts/10-generate-proof.ts`
